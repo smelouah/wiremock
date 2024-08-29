@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  wiremock:
+    image: wiremock/wiremock:latest
+    container_name: wiremock
+    ports:
+      - "8080:8080"
+    #volumes:
+    #  - ./mappings:/home/wiremock/mappings
+    #  - ./files:/home/wiremock/__files
+    build: .
+    command:
+      - --verbose
+      - --enable-browser-proxying 
+      - --trust-all-proxy-targets
+    #user: "1000:1000"
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./files
+          target: /home/wiremock/__files
+          ignore:
+            - "**/*.swp"
+            - "**/*.tmp"
+          #debounce: 5s       
+        - action: sync+restart
+          path: ./mappings
+          target: /home/wiremock/mappings
+          ignore:
+            - "**/*.swp"
+            - "**/*.tmp"
